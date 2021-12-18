@@ -49,8 +49,6 @@ The installed version should be 1.24.0.
 
 Open the "Utility Disk" to make a new case sensitive volume.
 
-![New Volume](./Screen_1.png)
-
 Click on the "+" situated on the right corner of the window.
 In my case I name it “crosstool-ng” which uses “APFS (case-sensitive)”. I've allocated 20GB about.
 

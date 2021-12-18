@@ -160,7 +160,63 @@ If you do not see those directories, something is wrong. Go back and check your 
 
 ### Qt Source: Download
 
+Download the Qt 6.2.2 source code from here: [link](https://download.qt.io/archive/qt/6.2/6.2.2/single/qt-everywhere-src-6.2.2.zip).
+Extract the downloaded archive.
+
 ### Qt Source: Configure
+
+First of all, create a new file called "toolchain.cmake" and put the following inside it:
+
+```
+SET(CMAKE_SYSTEM_NAME Linux)
+SET(CMAKE_SYSTEM_VERSION 1)
+
+set(TOOLCHAIN_ROOT_DIR /Volumes/crosstool-ng/armv8-rpi4-linux-gnueabihf)
+set(RASPBERRY_ROOT_FS ${TOOLCHAIN_ROOT_DIR}/armv8-rpi4-linux-gnueabihf/sysroot)
+
+set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} ${RASPBERRY_ROOT_FS}/usr/lib ${RASPBERRY_ROOT_FS}/usr/lib/arm-linux-gnueabihf)
+set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} ${RASPBERRY_ROOT_FS}/usr/include)
+
+# Specify the cross compiler
+SET(CMAKE_C_COMPILER ${TOOLCHAIN_ROOT_DIR}/bin/armv8-rpi4-linux-gnueabihf-gcc)
+SET(CMAKE_CXX_COMPILER ${TOOLCHAIN_ROOT_DIR}/bin/armv8-rpi4-linux-gnueabihf-g++)
+
+# Where is the target environment
+SET(CMAKE_SYSROOT ${TOOLCHAIN_ROOT_DIR}/armv8-rpi4-linux-gnueabihf/sysroot)
+SET(CMAKE_FIND_ROOT_PATH ${TOOLCHAIN_ROOT_DIR})
+
+#SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --sysroot=/Volumes/crosstool-ng/")
+#SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} --sysroot=${CMAKE_FIND_ROOT_PATH}")
+#SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} --sysroot=${CMAKE_FIND_ROOT_PATH}")
+
+set(CMAKE_C_FLAGS
+  "-lGLESv2 "
+  CACHE STRING "" FORCE
+)
+
+set(CMAKE_CXX_FLAGS
+  "-lGLESv2 "
+  CACHE STRING "" FORCE
+)
+
+# Search for programs only in the build host directories
+SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+
+# Search for libraries and headers only in the target directories
+SET(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+SET(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
+```
+
+Use the path of this file for the argument "DCMAKE_TOOLCHAIN_FILE" of the next step. In my case this was: "/Users/davide/qt6/rpi4-cross/toolchain.cmake".
+To compile the Qt binaries for RaspberryPi you must have the Qt binaries compiled for Mac OS. In my case that are inside the folder "/opt/Qt6", and this path must be specified inside the "qt-host-path" argument of the next step.
+The argument "extprefix" specify where to install the binaries inside your Mac, in my case i used "/opt/Qt6Rpi4".
+The argument "prefix" specify the path where the Qt6 binaries must be installed. I used "/usr/local/qt6".
+
+In the end, this is the entire configure command:
+
+`../qt-everywhere-src-6.2.2/configure -release -opengl es2 -qt-harfbuzz -qt-doubleconversion -no-use-gold-linker -skip qtwayland -skip qtdatavis3d -skip qtwebengine -device linux-rasp-pi4-v3d-g++ -nomake examples -nomake tests -qt-host-path /opt/Qt6 -extprefix /opt/Qt6Rpi4 -prefix /usr/local/qt6
+-- -DCMAKE_TOOLCHAIN_FILE=/Users/davide/qt6/rpi4-cross/toolchain.cmake`
 
 ### Qt Source: Build
 

@@ -8,7 +8,11 @@ Download <b>Raspberry Pi Imager</b> from [here](https://downloads.raspberrypi.or
 
 ##### Installing latest updates and libraries
 
-Once the OS is installed, enable SSH so connect to your Raspberry using it and edit the file "/etc/apt/sources.list", so run the folling command:
+Once the OS is installed, enable SSH so connect to your Raspberry using it and edit the file "/etc/apt/sources.list". So, start an SSH session with the api running:
+
+`ssh pi@rpi_ip_address`
+
+Run the folling command:
 
 `sudo nano /etc/apt/sources.list`
 
@@ -60,18 +64,55 @@ sudo reboot
 
 ##### GCC 11: Build & Install
 
-@TODO
+Download the release version of GCC Version 11.2.0 from this link: [here](https://github.com/gcc-mirror/gcc/archive/refs/tags/releases/gcc-11.2.0.tar.gz) or if you prefer, you could use "wget" to download that.
 
-Download link: [here](https://github.com/gcc-mirror/gcc/archive/refs/tags/releases/gcc-11.2.0.tar.gz)
+So, download the tar with the following command:
+
+`https://github.com/gcc-mirror/gcc/archive/refs/tags/releases/gcc-11.2.0.tar.gz`
+
+And extract it with the following:
+
+`tar -zxvf gcc-11.2.0.tar.gz`
+
+So, move inside the extracted folder and download the prerequisites:
+
+```
+cd gcc-releases-gcc-11.2.0/
+./contrib/download_prerequisites
+```
+
+Now, you must move back and make the build directory and move inside that:
+
+```
+cd ..
+mkdir gcc11Build && cd gcc11Build
+```
+
+Run the "configure" script specifying the cpu, the on-chip floating point unit, the include directory for gcc and g++, and we are using "/usr" folder as install directory, and c, c++, fortran as languages.
+
+```
+LANG=c,c++,fortran
+../gcc-releases-gcc-11.2.0/configure --enable-languages=$LANG --with-float=hard --prefix=/usr --with-cpu=cortex-a72 CXXFLAGS="-I/usr/include/arm-linux-gnueabihf" CFLAGS="-I/usr/include/arm-linux-gnueabihf"
+```
+
+So, now we can build and install:
+
+```
+make -j 4
+sudo make install
+```
+
+Be sure that you are using gcc 11.2 running the following commands:
+
+```
+gcc --version
+g++ --version
+```
 
 ##### Prerequisites
 
 To configure our toolchain, with a vanilla toolchain created by crosstool-NG, the linker does not have the necessary library search paths. On the Pi, there are libraries stored inside /usr/lib/arm-linux-gnueabihf/ and /lib/arm-linux-gnueabihf/. This is because of Debian Multiarch. However, the linker from the binutils that gets downloaded by crosstool-NG will only search inside /usr/lib and /lib, which means that libraries in the arm-linux-gnueabihf subdirectories wont be found.
 To fix this issue, we need to provide a patch for binutils (the package that contains the linker among other things) to crosstool-NG. This patch is provided by Debian, and we can get a copy of it on the Pi by installing binutils-source.
-
-So, start an SSH session with the api running:
-
-`ssh pi@ip_address`
 
 Run the following command to download and install the binutils sources:
 

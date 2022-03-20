@@ -110,6 +110,15 @@ gcc --version
 g++ --version
 ```
 
+After that, run the following commands:
+```
+sudo rm /lib/arm-linux-gnueabihf/libstdc++.so.6
+ln -s /usr/lib/libstdc++.so /lib/arm-linux-gnueabihf/libstdc++.so.6
+strings /lib/arm-linux-gnueabihf/libstdc++.so.6 | grep GLIBCXX
+```
+
+Everything is ok if the string "GLIBCXX_3.4.29" appear in the output.
+
 ##### Prerequisites
 
 To configure our toolchain, with a vanilla toolchain created by crosstool-NG, the linker does not have the necessary library search paths. On the Pi, there are libraries stored inside /usr/lib/arm-linux-gnueabihf/ and /lib/arm-linux-gnueabihf/. This is because of Debian Multiarch. However, the linker from the binutils that gets downloaded by crosstool-NG will only search inside /usr/lib and /lib, which means that libraries in the arm-linux-gnueabihf subdirectories wont be found.
@@ -447,7 +456,81 @@ rsync -avz --rsync-path="sudo rsync" /opt/Qt6.2.4_Rpi4/ pi@RPI_IP:/usr/local/qt6
 #### QtCreator
 
 ##### Configuration
-@TODO
+Open Qt Creator and go inside the "Preferences" menu.
 
-##### Test App
-@TODO
+##### Adding a device
+On the left, click on "Devices" and push the button "Add" located on the right. Select "Generic Linux Device" and click on "Start Wizard", choose a name, put the RPi'IP address and use "pi" as username. Click the "Next" button twice and then click on "Finish". Qt Creator will try to connect to this new device so a new window should appear to type the password of the user "pi". Type it and check if the connection works.
+
+##### Adding a Qt Versions
+On the left, click on "Kits" and switch to "Qt Versions" menu, then push the button "Add" located on the right.
+Navigate inside the folder where you have installed your Qt cross compiled binaries (in my case it is: "/opt/Qt6.2.4_Rpi4"), go inside the "bin" directory and select the "qmake" executable.
+
+##### Adding the compilers
+Then, switch (from the top) on the "Compilers" menu and click the button "Add-->GCC-->C" located on the right.
+Choose a name for this compiler, then click on the "Choose" button and selected the gcc cross compiler created with crosstool-ng. In mmy case it is localed in: /Volumes/crosstool-ng/armv8-rpi4-linux-gnueabihf/bin/armv8-rpi4-linux-gnueabihf-gcc.
+Now we must add the g++ compiler, so click on the button "Add-->GCC-->C++", chose a name for it too and select the g++ cross compiler. In my case it is located in:
+/Volumes/crosstool-ng/armv8-rpi4-linux-gnueabihf/bin/armv8-rpi4-linux-gnueabihf-g++.
+
+##### Adding the Kit
+Then, switch (from the top) on the "Kits" menu and click the button "Add" located on the right. Choose a name for the kit, change the "Device", the "C Compiler", the "C++ Compiler" and the "Qt version" choosing the ones created just before. Then press "OK".
+
+#### Test App: Cmake
+Create a CMake project and edit the file "CMakeLists.txt" adding these lines after the "project" declaration:
+
+```
+set(QT_MACOS_LOCAL_PATH "/Users/davide/Qt/6.2.4/macos")
+set(TOOLCHAIN_ROOT_DIR /Volumes/crosstool-ng/armv8-rpi4-linux-gnueabihf)
+set(RASPBERRY_ROOT_FS ${TOOLCHAIN_ROOT_DIR}/armv8-rpi4-linux-gnueabihf/sysroot)
+
+set(CMAKE_SYSTEM_NAME Linux)
+set(DCMAKE_PREFIX_PATH ${QT_MACOS_LOCAL_PATH})
+set(QT_HOST_PATH ${QT_MACOS_LOCAL_PATH})
+set(QT_HOST_PATH_CMAKE_DIR ${QT_MACOS_LOCAL_PATH}/lib/cmake)
+
+set(CMAKE_SYSROOT ${TOOLCHAIN_ROOT_DIR}/armv8-rpi4-linux-gnueabihf/sysroot)
+set(CMAKE_OSX_SYSROOT ${CMAKE_SYSROOT})
+set(CMAKE_FIND_ROOT_PATH ${TOOLCHAIN_ROOT_DIR})
+
+set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} ${RASPBERRY_ROOT_FS}/usr/lib ${RASPBERRY_ROOT_FS}/usr/lib/arm-linux-gnueabihf ${RASPBERRY_ROOT_FS}/opt/vc/lib)
+set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} ${RASPBERRY_ROOT_FS}/usr/lib/arm-linux-gnueabihf ${RASPBERRY_ROOT_FS}/usr/include ${RASPBERRY_ROOT_FS}/opt/vc/include)
+
+set(EGL_INCLUDE_DIR ${RASPBERRY_ROOT_FS}/opt/vc/include)
+set(EGL_LIBRARY ${RASPBERRY_ROOT_FS}/opt/vc/lib/libEGL.so)
+set(GLESv2_INCLUDE_DIR ${RASPBERRY_ROOT_FS}/opt/vc/include)
+set(GLESv2_LIBRARY ${RASPBERRY_ROOT_FS}/opt/vc/lib/libGLESv2.so)
+
+find_path(LIBB2_INCLUDE_DIR
+    NO_DEFAULT_PATH
+    PATHS ${RASPBERRY_ROOT_FS}/usr/include
+    NAMES blake2.h)
+find_library(LIBB2_LIBRARY
+    NO_DEFAULT_PATH
+    PATHS ${RASPBERRY_ROOT_FS}/usr/lib/arm-linux-gnueabihf
+    NAMES b2)
+
+if(LIBB2_LIBRARY AND LIBB2_INCLUDE_DIR)
+    add_library(Libb2::Libb2 UNKNOWN IMPORTED)
+    set_target_properties(Libb2::Libb2 PROPERTIES
+        IMPORTED_LOCATION ${LIBB2_LIBRARY}
+        INTERFACE_INCLUDE_DIRECTORIES ${LIBB2_INCLUDE_DIR}
+    )
+endif()
+```
+
+Put these lines after the "qt_add_executable" declaration:
+```
+target_link_libraries(projectName
+    PUBLIC Libb2::Libb2)
+
+#Deployment into RaspBerry Pi
+set(PATH_WHERE_DEPLOY "path where you would deploy the app")
+set(INSTALL_DESTDIR ${PATH_WHERE_DEPLOY})
+set(CMAKE_INSTALL_PREFIX ${PATH_WHERE_DEPLOY})
+install(TARGETS projectName
+    RUNTIME DESTINATION ${INSTALL_DESTDIR}
+    BUNDLE DESTINATION ${INSTALL_DESTDIR}
+    LIBRARY DESTINATION ${INSTALL_DESTDIR}
+)
+```
+
+Build, deploy and test your app!

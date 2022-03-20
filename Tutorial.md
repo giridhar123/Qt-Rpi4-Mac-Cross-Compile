@@ -36,6 +36,7 @@ sudo reboot
 sudo apt-get install libboost-all-dev libudev-dev libinput-dev libts-dev libmtdev-dev libjpeg-dev libfontconfig1-dev libssl-dev libdbus-1-dev libglib2.0-dev libxkbcommon-dev libegl1-mesa-dev libgbm-dev libgles2-mesa-dev mesa-common-dev libasound2-dev libpulse-dev gstreamer1.0-omx libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev  gstreamer1.0-alsa libvpx-dev libsrtp0-dev libsnappy-dev libnss3-dev
 sudo apt-get install "^libxcb.*"
 sudo apt-get install flex bison libxslt-dev ruby gperf libbz2-dev libcups2-dev libatkmm-1.6-dev libxi6 libxcomposite1 libfreetype6-dev libicu-dev libsqlite3-dev libxslt1-dev libavcodec-dev libavformat-dev libswscale-dev gstreamer1.0-tools libraspberrypi-dev libx11-dev libglib2.0-dev freetds-dev libsqlite0-dev libpq-dev libiodbc2-dev firebird-dev libgst-dev libxext-dev libxcb1 libxcb1-dev libx11-xcb1 libx11-xcb-dev libxcb-keysyms1 libxcb-keysyms1-dev libxcb-image0 libxcb-image0-dev libxcb-shm0 libxcb-shm0-dev libxcb-icccm4 libxcb-icccm4-dev libxcb-sync1 libxcb-sync-dev libxcb-render-util0 libxcb-render-util0-dev libxcb-xfixes0-dev libxrender-dev libxcb-shape0-dev libxcb-randr0-dev libxcb-glx0-dev libxi-dev libdrm-dev libssl-dev libxcb-xinerama0 libxcb-xinerama0-dev libssl-dev libxcursor-dev libxcomposite-dev libxdamage-dev libfontconfig1-dev libxss-dev libxtst-dev libpci-dev libcap-dev libsrtp0-dev libxrandr-dev libnss3-dev libdirectfb-dev libaudio-dev libxfixes-dev libxcb-util-dev libxcb-xkb-dev libxkbcommon-x11-dev
+sudo apt install libb2-dev
 ```
 
 The following steps are needed to install the libatspi library:
@@ -53,7 +54,7 @@ ninja
 sudo ninja install
 ```
 
-Once that all library are installed, create the directory where we will put the QT compiled binaries:
+Once that all libraries are installed, create the directory where we will put the QT compiled binaries:
 
 ```
 sudo mkdir /usr/local/qt6
@@ -320,13 +321,49 @@ SEARCH_DIR("=/usr/lib/arm-linux-gnueabihf");
 
 If you do not see those directories, something is wrong. Go back and check your configuration and make sure you didn’t miss anything.
 
-### Sync sysroot
-@TODO
+##### Sync sysroot
+Navigate inside the folder 
+
+`/Volumes/crosstool-ng/armv8-rpi4-linux-gnueabihf/armv8-rpi4-linux-gnueabihf`
+
+and remove the "sysroot" directory. So, open a terminal and run the following command:
+
+`cd /Volumes/crosstool-ng/armv8-rpi4-linux-gnueabihf/armv8-rpi4-linux-gnueabihf`
+
+Now, we must run the following commands to download the libraries and header from Raspberry Pi. In the followign replace "RPI_IP" with the RaspberryPi's IP address.
+
+```
+rsync -avz --rsync-path="sudo rsync" pi@RPI_IP:/lib sysroot
+rsync -avz --rsync-path="sudo rsync" pi@RPI_IP:/usr/include sysroot/usr
+rsync -avz --rsync-path="sudo rsync" pi@RPI_IP:/lib sysroot
+rsync -avz --rsync-path="sudo rsync" pi@RPI_IP:/usr/lib sysroot/usr 
+rsync -avz --rsync-path="sudo rsync" pi@RPI_IP:/opt/vc sysroot/opt
+```
+
+After that you downloaded all the files, run these:
+
+```
+ls /Volumes/crosstool-ng/armv8-rpi4-linux-gnueabihf_TUTORIAL/armv8-rpi4-linux-gnueabihf/sysroot/usr/lib/arm-linux-gnueabihf/libEGL.so.1.1.0
+mv /Volumes/crosstool-ng/armv8-rpi4-linux-gnueabihf_TUTORIAL/armv8-rpi4-linux-gnueabihf/sysroot/usr/lib/arm-linux-gnueabihf/libEGL.so.1.1.0 /Volumes/crosstool-ng/armv8-rpi4-linux-gnueabihf_TUTORIAL/armv8-rpi4-linux-gnueabihf/sysroot/usr/lib/arm-linux-gnueabihf/libEGL.so.1.1.0_backup
+ln -s /Volumes/crosstool-ng/armv8-rpi4-linux-gnueabihf_TUTORIAL/armv8-rpi4-linux-gnueabihf/sysroot/opt/vc/lib/libEGL.so /Volumes/crosstool-ng/armv8-rpi4-linux-gnueabihf_TUTORIAL/armv8-rpi4-linux-gnueabihf/sysroot/usr/lib/arm-linux-gnueabihf/libEGL.so.1.1.0
+mv /Volumes/crosstool-ng/armv8-rpi4-linux-gnueabihf_TUTORIAL/armv8-rpi4-linux-gnueabihf/sysroot/usr/lib/arm-linux-gnueabihf/libGLESv2.so.2.1.0 /Volumes/crosstool-ng/armv8-rpi4-linux-gnueabihf_TUTORIAL/armv8-rpi4-linux-gnueabihf/sysroot/usr/lib/arm-linux-gnueabihf/libGLESv2.so.2.1.0_backup
+ln -s /Volumes/crosstool-ng/armv8-rpi4-linux-gnueabihf_TUTORIAL/armv8-rpi4-linux-gnueabihf/sysroot/opt/vc/lib/libGLESv2.so /Volumes/crosstool-ng/armv8-rpi4-linux-gnueabihf_TUTORIAL/armv8-rpi4-linux-gnueabihf/sysroot/usr/lib/arm-linux-gnueabihf/libGLESv2.so.2.1.0
+ln -s /Volumes/crosstool-ng/armv8-rpi4-linux-gnueabihf_TUTORIAL/armv8-rpi4-linux-gnueabihf/sysroot/opt/vc/lib/libEGL.so /Volumes/crosstool-ng/armv8-rpi4-linux-gnueabihf_TUTORIAL/armv8-rpi4-linux-gnueabihf/sysroot/opt/vc/lib/libEGL.so.1
+ln -s /Volumes/crosstool-ng/armv8-rpi4-linux-gnueabihf_TUTORIAL/armv8-rpi4-linux-gnueabihf/sysroot/opt/vc/lib/libGLESv2.so /Volumes/crosstool-ng/armv8-rpi4-linux-gnueabihf_TUTORIAL/armv8-rpi4-linux-gnueabihf/sysroot/opt/vc/lib/libGLESv2.so.2
+```
+
+Download the python script that fixes the relative links. So, from the terminal, run the following commands:
+
+```
+wget https://raw.githubusercontent.com/riscv/riscv-poky/master/scripts/sysroot-relativelinks.py
+chmod +x sysroot-relativelinks.py 
+./sysroot-relativelinks.py /Volumes/crosstool-ng/armv8-rpi4-linux-gnueabihf_TUTORIAL/armv8-rpi4-linux-gnueabihf/sysroot
+```
 
 #### Qt
 ##### Download
 
-Download the Qt 6.2.2 source code from here: [link](https://download.qt.io/archive/qt/6.2/6.2.2/single/qt-everywhere-src-6.2.2.zip).
+Download the Qt 6.2.4 source code from here: [link](https://download.qt.io/archive/qt/6.2/6.2.4/single/qt-everywhere-src-6.2.4.zip).
 Extract the downloaded archive.
 
 ##### Configure
@@ -337,33 +374,31 @@ First of all, create a new file called "toolchain.cmake" and put the following i
 SET(CMAKE_SYSTEM_NAME Linux)
 SET(CMAKE_SYSTEM_VERSION 1)
 
-set(TOOLCHAIN_ROOT_DIR /Volumes/crosstool-ng/armv8-rpi4-linux-gnueabihf)
-set(RASPBERRY_ROOT_FS ${TOOLCHAIN_ROOT_DIR}/armv8-rpi4-linux-gnueabihf/sysroot)
+SET(TOOLCHAIN_ROOT_DIR /Volumes/crosstool-ng/armv8-rpi4-linux-gnueabihf)
+SET(RASPBERRY_ROOT_FS ${TOOLCHAIN_ROOT_DIR}/armv8-rpi4-linux-gnueabihf/sysroot)
+SET(DCMAKE_PREFIX_PATH /Users/davide/Qt/6.2.4/macos)
+SET(QT_HOST_PATH /Users/davide/Qt/6.2.4/macos)
 
-set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} ${RASPBERRY_ROOT_FS}/usr/lib ${RASPBERRY_ROOT_FS}/usr/lib/arm-linux-gnueabihf)
-set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} ${RASPBERRY_ROOT_FS}/usr/include)
+SET(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} ${RASPBERRY_ROOT_FS}/usr/lib ${RASPBERRY_ROOT_FS}/usr/lib/arm-linux-gnueabihf)
+SET(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} ${RASPBERRY_ROOT_FS}/usr/include)
+SET(CROSS_COMPILE ${TOOLCHAIN_ROOT_DIR}/bin/armv8-rpi4-linux-gnueabihf-)
+SET(CMAKE_SYSROOT ${RASPBERRY_ROOT_FS})
 
 # Specify the cross compiler
 SET(CMAKE_C_COMPILER ${TOOLCHAIN_ROOT_DIR}/bin/armv8-rpi4-linux-gnueabihf-gcc)
 SET(CMAKE_CXX_COMPILER ${TOOLCHAIN_ROOT_DIR}/bin/armv8-rpi4-linux-gnueabihf-g++)
 
-# Where is the target environment
-SET(CMAKE_SYSROOT ${TOOLCHAIN_ROOT_DIR}/armv8-rpi4-linux-gnueabihf/sysroot)
-SET(CMAKE_FIND_ROOT_PATH ${TOOLCHAIN_ROOT_DIR})
-
-#SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --sysroot=/Volumes/crosstool-ng/")
-#SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} --sysroot=${CMAKE_FIND_ROOT_PATH}")
-#SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} --sysroot=${CMAKE_FIND_ROOT_PATH}")
-
-set(CMAKE_C_FLAGS
+SET(CMAKE_C_FLAGS
   "-lGLESv2 "
   CACHE STRING "" FORCE
 )
 
-set(CMAKE_CXX_FLAGS
+SET(CMAKE_CXX_FLAGS
   "-lGLESv2 "
   CACHE STRING "" FORCE
 )
+
+#link_directories(${TOOLCHAIN_ROOT_DIR}/armv8-rpi4-linux-gnueabihf/sysroot/usr/lib/arm-linux-gnueabihf)
 
 # Search for programs only in the build host directories
 SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
@@ -371,21 +406,19 @@ SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 # Search for libraries and headers only in the target directories
 SET(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 SET(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
-set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
+SET(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
 ```
 
 Use the path of this file for the argument "DCMAKE_TOOLCHAIN_FILE" of the next step. In my case this was: "/Users/davide/qt6/rpi4-cross/toolchain.cmake".
-To compile the Qt binaries for RaspberryPi you must have the Qt binaries compiled for Mac OS. In my case that are inside the folder "/opt/Qt6", and this path must be specified inside the "qt-host-path" argument of the next step.
+To compile the Qt binaries for RaspberryPi you must have the Qt binaries compiled for Mac OS. In my case that are inside the folder "/Users/davide/Qt/6.2.4/macos", and this path must be specified inside the "qt-host-path" argument of the next step.
 The argument "extprefix" specify where to install the binaries inside your Mac, in my case i used "/opt/Qt6Rpi4".
 The argument "prefix" specify the path where the Qt6 binaries must be installed. I used "/usr/local/qt6".
 
 In the end, this is the entire configure command:
 
-`../qt-everywhere-src-6.2.2/configure -release -opengl es2 -qt-harfbuzz -qt-doubleconversion -no-use-gold-linker -skip qtwayland -skip qtdatavis3d -skip qtwebengine -device linux-rasp-pi4-v3d-g++ -nomake examples -nomake tests -qt-host-path /opt/Qt6 -extprefix /opt/Qt6Rpi4 -prefix /usr/local/qt6
--- -DCMAKE_TOOLCHAIN_FILE=/Users/davide/qt6/rpi4-cross/toolchain.cmake`
+`../qt-everywhere-src-6.2.4/configure -release -opengl es2 -qt-harfbuzz -qt-doubleconversion -no-use-gold-linker -skip qtscript -skip qtwayland -skip qtdatavis3d -nomake examples -device linux-rasp-pi4-v3d-g++ -device-option CROSS_COMPILE=/Volumes/crosstool-ng/armv8-rpi4-linux-gnueabihf_TUTORIAL/bin/armv8-rpi4-linux-gnueabihf- -nomake examples -nomake tests -qt-host-path /Users/davide/Qt/6.2.4/macos -extprefix /opt/Qt6.2.4_Rpi4 -prefix /usr/local/qt6 -- -DCMAKE_TOOLCHAIN_FILE=/Users/davide/qt6/rpi4-cross/toolchain.cmake`
 
 ##### Build & Install
-
 After that configuration is completed, just run these commands:
 
 ```
@@ -398,9 +431,20 @@ Sometimes could happen that the build process stuck, if it happen, press "CTRL +
 `cmake --build . --parallel 4`
 
 ##### Upload compiled binaries to RaspberryPi
-@TODO
+Connect via SSH to your RaspberryPi and type the following commands:
 
-### QtCreator
+```
+sudo mkdir /usr/local/qt5pi
+sudo chown pi:pi /usr/local/qt5pi
+```
+
+Then, turn back on you MAC and type the following command (substitue the "RPI_IP" with the RaspberryPi's IP address):
+
+`
+rsync -avz --rsync-path="sudo rsync" /opt/Qt6.2.4_Rpi4/ pi@RPI_IP:/usr/local/qt6
+`
+
+#### QtCreator
 
 ##### Configuration
 @TODO

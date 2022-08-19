@@ -534,3 +534,9 @@ install(TARGETS projectName
 ```
 
 Build, deploy and test your app!
+
+# DONATIONS
+
+If you liked this tutorial, use the following QR Code to make a donation.
+
+<div align="center"><img width=300 src="https://pidmx.net/home/wp-content/uploads/2022/02/WhatsApp-Image-2022-02-27-at-12.25.12-PM.jpeg"/></div>

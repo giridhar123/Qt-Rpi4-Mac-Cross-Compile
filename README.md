@@ -70,7 +70,7 @@ Download the release version of GCC Version 11.2.0 from this link: [here](https:
 
 So, download the tar with the following command:
 
-`https://github.com/gcc-mirror/gcc/archive/refs/tags/releases/gcc-11.2.0.tar.gz`
+`wget https://github.com/gcc-mirror/gcc/archive/refs/tags/releases/gcc-11.2.0.tar.gz`
 
 And extract it with the following:
 

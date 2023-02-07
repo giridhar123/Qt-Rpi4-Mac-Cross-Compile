@@ -8,15 +8,15 @@ Download <b>Raspberry Pi Imager</b> from [here](https://downloads.raspberrypi.or
 
 ##### Installing latest updates and libraries
 
-Once the OS is installed, enable SSH so connect to your Raspberry using it and edit the file "/etc/apt/sources.list". So, start an SSH session with the api running:
+Once the OS is installed, enable SSH to connect to the Raspberry. Then, start an SSH session running:
 
 `ssh pi@rpi_ip_address`
 
-Run the folling command:
+Run the following command:
 
 `sudo nano /etc/apt/sources.list`
 
-And remove the comment in the third line (delete the # at the beginning), the file should appear as follow:
+Rremove the comment in the third line (delete the # at the beginning), the file should appear as follow:
 
 ```
 deb http://raspbian.raspberrypi.org/raspbian/ bullseye main contrib non-free rpi
@@ -24,7 +24,8 @@ deb http://raspbian.raspberrypi.org/raspbian/ bullseye main contrib non-free rpi
 deb-src http://raspbian.raspberrypi.org/raspbian/ bullseye main contrib non-fre>
 ```
 
-Save the file pressing "CTRL + X" then press the "Y" button, then "Enter". Now run the following commands:
+Save the file pressing "CTRL + X" then press the "Y" button, then "Enter".
+Now run the following commands:
 
 ```
 sudo apt update

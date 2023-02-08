@@ -183,7 +183,7 @@ brew install bash
 
 After that, open the file ".bash_profile" with the following command:
 
-`sudo nano /Users/yourUserName/.bash_profile`
+`sudo nano $HOME/.bash_profile`
 
 Add this line at the end of the file:
 
@@ -197,7 +197,9 @@ export LDFLAGS="-L/usr/local/opt/binutils/lib -L/usr/local/opt/ncurses/lib -L/us
 export CPPFLAGS="-I/usr/local/opt/binutils/include -I/usr/local/opt/ncurses/include -I/usr/local/opt/flex/include -I/usr/local/opt/openssl@3/include"
 ```
 
-Close the file with "CTRL+X" and press "Y". Reload your terminal.
+Close the file with "CTRL+X" and press "Y". Reload your terminal running the following command:
+
+`source $HOME/.bash_profile`
 
 ##### Downloading & Installing
 

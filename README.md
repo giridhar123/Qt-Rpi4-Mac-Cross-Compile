@@ -203,7 +203,8 @@ Close the file with "CTRL+X" and press "Y". Reload your terminal running the fol
 
 ##### Downloading & Installing
 
-Open a terminal to download, build and install crosstool-ng from source code. Clone the crosstool-ng repository with the the following command:
+Open a terminal to download, build and install crosstool-ng from source code. 
+Download crosstool-ng (release version 1.25.0)  with the the following command:
 
 `wget https://github.com/crosstool-ng/crosstool-ng/releases/download/crosstool-ng-1.25.0/crosstool-ng-1.25.0.tar.xzcrosstool-ng-1.25.0.tar.xz`
 

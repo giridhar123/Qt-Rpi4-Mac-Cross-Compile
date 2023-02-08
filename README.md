@@ -192,6 +192,7 @@ export PATH="/usr/local/opt/libtool/libexec/gnubin:$PATH"
 export PATH="/usr/local/opt/ncurses/bin:$PATH"
 export PATH="/usr/local/opt/flex/bin:$PATH"
 export PATH="/usr/local/opt/openssl@3/bin:$PATH"
+export PATH="/usr/local/opt/binutils/bin:$PATH"
 
 export LDFLAGS="-L/usr/local/opt/binutils/lib -L/usr/local/opt/ncurses/lib -L/usr/local/opt/flex/lib -L/usr/local/opt/openssl@3/lib"
 export CPPFLAGS="-I/usr/local/opt/binutils/include -I/usr/local/opt/ncurses/include -I/usr/local/opt/flex/include -I/usr/local/opt/openssl@3/include"

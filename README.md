@@ -152,7 +152,7 @@ In my case is: 2.31
 
 #### CrossTool-NG
 
-##### Install using brew
+##### Prerequisites
 First of all install the required packages with brew running the following commands:
 
 ```
@@ -181,10 +181,6 @@ brew install readline
 brew install bash
 ```
 
-Then use the following command to install crosstool-ng
-
-`brew install crosstool-ng`
-
 After that, open the file ".bash_profile" with the following command:
 
 `sudo nano $HOME/.bash_profile`
@@ -192,7 +188,6 @@ After that, open the file ".bash_profile" with the following command:
 Add this line at the end of the file:
 
 ```
-export PATH="/usr/local/Cellar/crosstool-ng/1.25.0/bin:$PATH"
 export PATH="/usr/local/opt/libtool/libexec/gnubin:$PATH"
 export PATH="/usr/local/opt/ncurses/bin:$PATH"
 export PATH="/usr/local/opt/flex/bin:$PATH"
@@ -206,6 +201,24 @@ export CPPFLAGS="-I/usr/local/opt/binutils/include -I/usr/local/opt/ncurses/incl
 Close the file with "CTRL+X" and press "Y". Reload your terminal running the following command:
 
 `source $HOME/.bash_profile`
+
+##### Downloading & Installing
+
+Open a terminal to download, build and install crosstool-ng from source code. 
+Download crosstool-ng (release version 1.25.0)  with the the following command:
+
+`wget https://github.com/crosstool-ng/crosstool-ng/releases/download/crosstool-ng-1.25.0/crosstool-ng-1.25.0.tar.xz`
+
+Move into the downloaded folder and type the following commands:
+
+```
+tar -xvf crosstool-ng-1.25.0.tar.xz
+cd crosstool-ng-1.25.0
+./bootstrap
+./configure --prefix=/usr/local
+make
+sudo make install
+```
 
 Check that crosstool-ng has been installed typing:
 

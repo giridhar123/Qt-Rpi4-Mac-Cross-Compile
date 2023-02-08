@@ -235,7 +235,7 @@ In my case I name it “crosstool-ng” which uses “APFS (case-sensitive)”. 
 
 Special thanks to [medium](https://medium.com/@stonepreston/how-to-cross-compile-a-cmake-c-application-for-the-raspberry-pi-4-on-ubuntu-20-04-bac6735d36df) for this.
 
-We need to move inside the volume created in the previous step:
+Before to continue, close and open again the terminal because we need to clear the old variable used to compile crosstool-ng. Then, move inside the volume created in the previous step:
 
 `cd /Volumes/crosstool-ng`
 
